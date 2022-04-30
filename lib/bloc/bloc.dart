@@ -216,21 +216,23 @@ class GitHubBloc extends Bloc<RootEvent, RootState> {
             isLoading: true,
             typePaging: currentState.typePaging));
 
-        Map<String, dynamic> newIssues = await Service().getIssues(
-            LoadIssues(page: event.page, keyword: currentState.keyword));
-        List<Issues> listIssues = newIssues['items'].map<Issues>((item) {
-          return Issues(
-              title: item['title'],
-              states: item['state'],
-              updateAt: item['updated_at'],
-              photo: item['user']['avatar_url']);
+        Map<String, dynamic> newRepo = await Service().getRepo(
+            LoadRepo(page: event.page, keyword: currentState.keyword));
+        List<Repo> listRepo = newRepo['items'].map<Repo>((item) {
+          return Repo(
+              createdAt: item['created_at'],
+              forksCount: item['forks_count'],
+              stargazersCount: item['stargazers_count'],
+              title: item['name'],
+              watchersCount: item['watchers_count'],
+              photo: item['owner']['avatar_url']);
         }).toList();
 
-        emit(IssuesStateLoaded(
-            issues: listIssues,
+        emit(RepoStateLoaded(
+            repo: listRepo,
             page: event.page,
             keyword: currentState.keyword,
-            total: newIssues['total_count'],
+            total: newRepo['total_count'],
             isLoading: false,
             typePaging: currentState.typePaging));
       }
